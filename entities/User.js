@@ -1,14 +1,16 @@
 var Sequelize = require("sequelize");
+var smartRequire = require("smart-require");
+var sequelize = smartRequire("config/sequelize");
 var Pet = require("./Pet");
+var Session = require("./Session");
 
-var User = this.sequelize.define('User', 
+var User = sequelize.define('User', 
 {
-    id: Sequelize.INTEGER,
-    token: Sequelize.STRING,
     login: Sequelize.STRING,
     password: Sequelize.STRING
 });
 
 User.hasMany(Pet);
+User.hasMany(Session);
 
 module.exports = User;

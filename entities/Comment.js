@@ -1,4 +1,6 @@
 var Sequelize = require("sequelize");
+var smartRequire = require("smart-require");
+var sequelize = smartRequire("config/sequelize");
 var Post = require("./Post");
 var Pet = require("./Pet");
 

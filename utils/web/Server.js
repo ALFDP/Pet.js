@@ -15,6 +15,16 @@ Server.prototype.addRoute = function(route) {
     }
 }
 
+Server.prototype.addAllRoutes = function(routes) {
+    if(routes !== undefined)
+    {
+        for(var i = 0 ; i < routes.length ; i++)
+        {
+            this.addRoute(routes[i]);
+        }
+    }
+}
+
 Server.prototype.start = function() {
     this.app = express();
     var length = this.routes.length;
