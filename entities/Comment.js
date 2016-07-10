@@ -6,8 +6,8 @@ var Pet = require("./Pet");
 
 var Comment = sequelize.define('Comment', 
 {
-    id: Sequelize.INTEGER,
-    message: Sequelize.STRING
+    message: Sequelize.STRING,
+    date: Sequelize.DATE
 });
 
 Comment.belongsTo(Post);

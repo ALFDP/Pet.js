@@ -1,11 +1,13 @@
 var Sequelize = require("sequelize");
+var smartRequire = require("smart-require");
+var sequelize = smartRequire("config/sequelize");
 var Comment = require("./Comment");
 var Pet = require("./Pet");
 
 var Post = sequelize.define('Post', 
 {
-    id: Sequelize.INTEGER,
-    message: Sequelize.STRING
+    message: Sequelize.STRING,
+    date: Sequelize.DATE
 });
 
 Post.hasMany(Comment);

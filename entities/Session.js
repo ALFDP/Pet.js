@@ -6,7 +6,7 @@ var User = require("./Pet");
 var Session = sequelize.define('User', 
 {
     token: Sequelize.STRING,
-    expire: Sequelize.INTEGER
+    expire: Sequelize.DATE
 });
 
 Session.belongsTo(User);
