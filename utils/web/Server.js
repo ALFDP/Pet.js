@@ -1,6 +1,7 @@
 var smartRequire = require("smart-Require");
-var Route = smarteRequire("Route");
+var Route = smartRequire("utils/web/Route");
 var express = require("express");
+var log = smartRequire("utils/logger")("Server");
 
 var Server = function(port) {
     this.app = undefined;
@@ -35,5 +36,8 @@ Server.prototype.start = function() {
         this.app[route.method](route.url, route.callback);
     }
     
+    log.info("Listening on port " + this.port);
     this.app.listen(this.port);
 }
+
+module.exports = Server;

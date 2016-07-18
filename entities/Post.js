@@ -1,16 +1,24 @@
 var Sequelize = require("sequelize");
 var smartRequire = require("smart-require");
-var sequelize = smartRequire("config/sequelize");
 var Comment = require("./Comment");
-var Pet = require("./Pet");
+var extraLayer = smartRequire("config/extraLayer");
 
-var Post = sequelize.define('Post', 
-{
-    message: Sequelize.STRING,
-    date: Sequelize.DATE
-});
+var Post = {
+    id: {
+            type: Sequelize.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+    },
+    message: {
+            type: Sequelize.STRING
+    },
+    date: {
+            type: Sequelize.DATE
+    }
+};
 
-Post.hasMany(Comment);
-Post.belongsTo(Pet);
+var model = extraLayer.register("Post", "post", Post);
 
-module.exports = Post;
+model.hasMany(Comment);
+
+module.exports = model;

@@ -1,16 +1,22 @@
 var Sequelize = require("sequelize");
 var smartRequire = require("smart-require");
-var sequelize = smartRequire("config/sequelize");
-var Pet = require("./Pet");
-var Session = require("./Session");
+var extraLayer = smartRequire("config/extraLayer");
 
-var User = sequelize.define('User', 
-{
-    login: Sequelize.STRING,
-    password: Sequelize.STRING
-});
+var User = {
+    id: {
+            type: Sequelize.BIGINT,
+            primaryKey: true,
+            autoIncrement: true
+    },
+    login: {
+            type: Sequelize.STRING
+    },
+    password: {
+            type: Sequelize.STRING
+    }
+};
 
-User.hasMany(Pet);
-User.hasMany(Session);
 
-module.exports = User;
+var model = extraLayer.register("User", "user", User);
+
+module.exports = model;

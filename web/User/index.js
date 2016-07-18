@@ -1,7 +1,7 @@
 var smartRequire = require("smart-require");
 var Route = smartRequire("utils/web/Route");
 var User = smartRequire("entities/User");
-var sha256 = require("sha56");
+var sha256 = require("sha256");
 
 var userSignUp = new Route("/user", "put", function(request, response){
     

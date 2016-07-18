@@ -1,7 +1,6 @@
 var smartRequire = require("smart-require");
 var Route = smartRequire("utils/web/Route");
 var Pet = smartRequire("entities/Pet");
-var sha256 = require("sha56");
 
 var addPet = new Route("/pet", "put", function(request, response){
     
