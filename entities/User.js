@@ -16,7 +16,6 @@ var User = {
     }
 };
 
-
 var model = extraLayer.register("User", "user", User);
 
 module.exports = model;

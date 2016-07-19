@@ -20,8 +20,7 @@ var addPet = new Route("/pet", "put", function(request, response){
                 userId: request.body.userId
             });            
             
-            pet.save()
-            .success(function() {
+            pet.save().success(function() {
                 response.json({
                     message: "Pet succesfully added"
                 });
@@ -50,6 +49,156 @@ var addPet = new Route("/pet", "put", function(request, response){
     }
 });
 
+var addPetFriend = new Route("/petFriend", "put", function(request, response){
+    
+    if(request.body.userId !== undefined)
+    {
+        var idRegex = /\d+/;
+        if(request.body.id.match(idRegex) && request.body.idFriend.match(idRegex))
+        {
+            Pet.findById(request.body.id).then(function(result) {
+		if(result)
+		{
+			Pet.findById(request.body.id).then(function(friend) {
+                            if(friend)
+                            {
+                                result.addPet(friend).then(function() {
+                                    friend.addPet(result).then(function(){
+                                        res.json({
+                                            code: 0,
+                                            message : "Pet are now friends at index " + request.body.id + "/" + request.body.idFriend,
+                                            result: true
+                                        });
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                    res.json({
+                                            code: 1,
+                                            message : "No Pet detected at index " + request.body.idFriend,
+                                            result: false
+                                    });
+                            }
+				
+			}).catch(function(err) {
+				res.json({
+					code: 1,
+                                        message : "No Pet detected at index " + request.body.idFriend,
+                                        result: false
+				});
+			});
+		}
+		
+		else
+		{
+			res.json({
+				code: 1,
+                                message : "No Pet detected at index " + request.body.id,
+				result: false
+			});
+		}
+            }).catch(function(err) {
+                    res.json({
+                            code: 2,
+                            message: "Sequelize error",
+                            error: err
+                    });
+            });
+        }
+        else
+        {
+            response.json({
+                message: "Pet failed to be retrieved",
+                error : "A field doesn't match with regex specifications"
+            });
+        }
+    }
+    
+    else
+    {
+        response.json({
+            message: "Pet failed to be retrieved",
+            error: "A field is empty"
+        });
+    }
+});
+
+var delPetFriend = new Route("/petFriend", "delete", function(request, response){
+    
+    if(request.body.userId !== undefined)
+    {
+        var idRegex = /\d+/;
+        if(request.body.id.match(idRegex) && request.body.idFriend.match(idRegex))
+        {
+            Pet.findById(request.body.id).then(function(result) {
+		if(result)
+		{
+			Pet.findById(request.body.id).then(function(friend) {
+                            if(friend)
+                            {
+                                result.removePet(friend).then(function() {
+                                    friend.removePet(result).then(function(){
+                                        res.json({
+                                            code: 0,
+                                            message : "Pet are now friends at index " + request.body.id + "/" + request.body.idFriend,
+                                            result: true
+                                        });
+                                    });
+                                });
+                            }
+                            else
+                            {
+                                    res.json({
+                                            code: 1,
+                                            message : "No Pet detected at index " + request.body.idFriend,
+                                            result: false
+                                    });
+                            }
+				
+			}).catch(function(err) {
+				res.json({
+					code: 1,
+                                        message : "No Pet detected at index " + request.body.idFriend,
+                                        result: false
+				});
+			});
+		}
+		
+		else
+		{
+			res.json({
+				code: 1,
+                                message : "No Pet detected at index " + request.body.id,
+				result: false
+			});
+		}
+            }).catch(function(err) {
+                    res.json({
+                            code: 2,
+                            message: "Sequelize error",
+                            error: err
+                    });
+            });
+        }
+        else
+        {
+            response.json({
+                message: "Pet failed to be retrieved",
+                error : "A field doesn't match with regex specifications"
+            });
+        }
+    }
+    
+    else
+    {
+        response.json({
+            message: "Pet failed to be retrieved",
+            error: "A field is empty"
+        });
+    }
+});
+
 // check session token
 var delPet = new Route("/pet", "delete", function(request, response){
     
@@ -58,15 +207,38 @@ var delPet = new Route("/pet", "delete", function(request, response){
         var idRegex = /\d+/;
         if(request.body.id.match(idRegex))
         {
-            var pet = Pet.findById(request.body.id).success(function() {
-                response.json({
-                    message: "Pet succesfully deleted"
-                });
-            }).error(function(error) {
-                response.json({
-                    message: "Pet failed to be deleted",
-                    error: error
-                });
+            Pet.findById(request.body.id).then(function(results) {
+		if(result)
+		{
+			results.destroy().then(function(suc) {
+				res.json({
+					code: 0,
+                                        message : "Pet succesfully deleted at index " + request.body.id,
+					result: true
+				});
+			}).catch(function(err) {
+				res.json({
+					code: 2,
+					message: "Sequelize error",
+					error: err
+				});
+			});
+		}
+		
+		else
+		{
+			res.json({
+				code: 1,
+                                message : "No Pet detected at index " + request.body.id,
+				result: false
+			});
+		}
+            }).catch(function(err) {
+                    res.json({
+                            code: 2,
+                            message: "Sequelize error",
+                            error: err
+                    });
             });
         }
         else
@@ -87,14 +259,73 @@ var delPet = new Route("/pet", "delete", function(request, response){
     }
 });
 
-var delPet = new Route("/pet", "view", function(request, response){
+var showPetFriend = new Route("/petFriend", "get", function(request, response){
     
     if(request.body.userId !== undefined)
     {
         var idRegex = /\d+/;
         if(request.body.id.match(idRegex))
         {
-            var pet = Pet.findAllAndCount({
+            Pet.findById(request.body.id).then(function(results) {
+                if(result)
+		{
+			results.getPets().then(function(suc) {
+				res.json({
+					code: 0,
+                                        message : "Pet succesfully deleted at index " + request.body.id,
+					result: true
+				});
+			}).catch(function(err) {
+				res.json({
+					code: 2,
+					message: "Sequelize error",
+					error: err
+				});
+			});
+		}
+		
+		else
+		{
+			res.json({
+				code: 1,
+                                message : "No Pet detected at index " + request.body.id,
+				result: false
+			});
+		}
+            }).catch(function(err) {
+                    res.json({
+                            code: 2,
+                            message: "Sequelize error",
+                            error: err
+                    });
+            });
+        }
+        else
+        {
+            response.json({
+                message: "Pet failed to be retrieved",
+                error : "A field doesn't match with regex specifications"
+            });
+        }
+    }
+    
+    else
+    {
+        response.json({
+            message: "Pet failed to be retrieved",
+            error: "A field is empty"
+        });
+    }
+});
+
+var showPet = new Route("/pet", "get", function(request, response){
+    
+    if(request.body.userId !== undefined)
+    {
+        var idRegex = /\d+/;
+        if(request.body.id.match(idRegex))
+        {
+            Pet.findAllAndCount({
                 where: ["userId = " + request.body.userId]
             }).success(function(result) {
                 response.json({
@@ -117,7 +348,7 @@ var delPet = new Route("/pet", "view", function(request, response){
         }
     }
     
-    else // by session id?
+    else
     {
         response.json({
             message: "Pet failed to be retrieved",
@@ -126,4 +357,4 @@ var delPet = new Route("/pet", "view", function(request, response){
     }
 });
 
-module.exports = [addPet];
+module.exports = [addPet, addPetFriend, delPetFriend, delPet, showPet];

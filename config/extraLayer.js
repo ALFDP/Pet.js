@@ -47,9 +47,9 @@ var find = function(Class, request){
 	});
 }
 	
-var suppress = function(Class, request) {
+var suppress = function(Class, id) {
 	
-	Class.find(request).then(function(results) {
+	Class.findById(id).then(function(results) {
 		if(result)
 		{
 			results.destroy().then(function(suc) {

@@ -1,6 +1,5 @@
 var Sequelize = require("sequelize");
 var smartRequire = require("smart-require");
-var Comment = require("./Comment");
 var extraLayer = smartRequire("config/extraLayer");
 
 var Post = {
@@ -18,7 +17,5 @@ var Post = {
 };
 
 var model = extraLayer.register("Post", "post", Post);
-
-model.hasMany(Comment);
 
 module.exports = model;

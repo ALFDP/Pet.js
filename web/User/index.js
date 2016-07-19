@@ -1,6 +1,7 @@
 var smartRequire = require("smart-require");
 var Route = smartRequire("utils/web/Route");
 var User = smartRequire("entities/User");
+var Session = smartRequire("entities/Session");
 var sha256 = require("sha256");
 
 var userSignUp = new Route("/user", "put", function(request, response){
@@ -12,8 +13,8 @@ var userSignUp = new Route("/user", "put", function(request, response){
         if(request.body.login.match(loginRegex) && request.body.pass.match(passRegex))
         {
             User.findAndCountAll({
-                where: ["login = " + request.body.login]
-            }).success(function(result) {
+                where: { login: request.body.login}
+            }).then(function(result) {
                 if(result.count !== 0)
                 {
                     response.json({
@@ -28,14 +29,9 @@ var userSignUp = new Route("/user", "put", function(request, response){
                         password: sha256(request.body.pass)
                     })
                     .save()
-                    .success(function() {
+                    .then(function() {
                         response.json({
                             message: "User succesfully added"
-                        });
-                    }).error(function(error) {
-                        response.json({
-                            message: "User failed to be added",
-                            error: error
                         });
                     });
                 }
@@ -59,4 +55,64 @@ var userSignUp = new Route("/user", "put", function(request, response){
     }
 });
 
-module.exports = [userSignUp];
+var userSignIn = new Route("/user", "post", function(request, response){
+    if(request.body.login !== undefined && request.body.pass !== undefined)
+    {
+        var loginRegex = /\w{5,20}/;
+        var passRegex = /\w{5,20}/;
+        if(request.body.login.match(loginRegex) && request.body.pass.match(passRegex))
+        {
+            User.findOne({
+                where: { login: request.body.login,password: sha256(request.body.pass)}
+            }).then(function(result) {
+                if(!result)
+                {
+                    response.json({
+                        message: "User failed to sign in",
+                        error: "User doesn't exist"
+                    });
+                }
+                else
+                {
+                    var token = sha256(Date.now() + Math.random() * 12345);
+                    var session = Session.build({
+                        token: token,
+                        expire: Date.now() + 3600000
+                    });
+                    
+                    result.addSession(session).then(function(){
+                        session.save().then(function() {
+                            response.json({
+                                message: "User succesfully signed in",
+                                token: token
+                            });
+                        });
+                    });
+                    
+                }
+            }).catch(function(err) {
+                response.json({
+                    message: "User not signed in",
+                    error: JSON.stringify(err)
+                });
+            });
+        }
+        else
+        {
+            response.json({
+                message: "User failed to be added",
+                error : "Login and/or password field doesn't match with regex specifications"
+            });
+        }
+    }
+    
+    else
+    {
+        response.json({
+            message: "User failed to be added",
+            error: "Login and/or password field is empty"
+        });
+    }
+});
+
+module.exports = [userSignUp, userSignIn];

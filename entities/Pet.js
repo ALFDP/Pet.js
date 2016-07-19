@@ -1,7 +1,6 @@
 var Sequelize = require("sequelize");
 var smartRequire = require("smart-require");
 var Post = require("./Post");
-var Comment = require("./Comment");
 var User = require("./User");
 var extraLayer = smartRequire("config/extraLayer");
 
@@ -25,7 +24,6 @@ var Pet = {
 var model = extraLayer.register("Pet", "pet", Pet);
 
 model.hasMany(Post);
-model.hasMany(Comment);
 model.hasMany(model);
 model.belongsTo(User);
 
