@@ -48,6 +48,10 @@ Server.prototype.initRoute = function(i) {
     var route = this.routes[i];
     this.app[route.method](route.url, function(request, response){
         log.info("Route " + route.url + ":" + route.method + " has been hit");
+        if(route.method === "get")
+        {
+            request.body = request.query;
+        }
         route.callback(request, response);
     });
 }

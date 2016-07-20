@@ -1,5 +1,6 @@
 var Sequelize = require("sequelize");
 var smartRequire = require("smart-require");
+var Pet = require("./Pet");
 var extraLayer = smartRequire("config/extraLayer");
 
 var User = {
@@ -17,5 +18,7 @@ var User = {
 };
 
 var model = extraLayer.register("User", "user", User);
+
+model.hasMany(Pet);
 
 module.exports = model;

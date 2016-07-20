@@ -3,6 +3,7 @@ var Route = smartRequire("utils/web/Route");
 var User = smartRequire("entities/User");
 var Session = smartRequire("entities/Session");
 var sha256 = require("sha256");
+var log = smartRequire("utils/logger")("User");
 
 var userSignUp = new Route("/user", "put", function(request, response){
     
@@ -74,13 +75,13 @@ var userSignIn = new Route("/user", "post", function(request, response){
                 }
                 else
                 {
-                    var token = sha256(Date.now() + Math.random() * 12345);
+                    var token = sha256("" + Date.now() + Math.random() * 1234);
                     var session = Session.build({
                         token: token,
                         expire: Date.now() + 3600000
                     });
                     
-                    result.addSession(session).then(function(){
+                    session.setUser(result).then(function(){
                         session.save().then(function() {
                             response.json({
                                 message: "User succesfully signed in",
@@ -91,6 +92,7 @@ var userSignIn = new Route("/user", "post", function(request, response){
                     
                 }
             }).catch(function(err) {
+                log.error(err);
                 response.json({
                     message: "User not signed in",
                     error: JSON.stringify(err)

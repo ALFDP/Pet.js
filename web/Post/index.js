@@ -2,6 +2,7 @@ var smartRequire = require("smart-require");
 var Route = smartRequire("utils/web/Route");
 var Pet = smartRequire("entities/Pet");
 var Post = smartRequire("entities/Post");
+var authenticate = smartRequire("utils/Session/authenticate");
 
 var addPost = new Route("/post", "put", function(request, response){
     
@@ -13,32 +14,34 @@ var addPost = new Route("/post", "put", function(request, response){
         if(request.body.message.match(messageRegex) && request.body.userId.match(userIdRegex)
                  && request.body.petId.match(petIdRegex))
         {
-            var post = Post.build({
-                message: request.body.name,
-                date : Date.now(),
-                userId: request.body.userId
-            });
-            Pet.findById(request.body.petId).then(function(pet){
-                if(pet)
-                {
-                    pet.getPosts.then(function(results) {
+            authenticate(request, response, function() {
+                var post = Post.build({
+                    message: request.body.name,
+                    date : Date.now(),
+                    userId: request.body.userId
+                });
+                Pet.findById(request.body.petId).then(function(pet){
+                    if(pet)
+                    {
+                        pet.getPosts.then(function(results) {
 
-                        post.save().then(function() {
-                            response.json({
-                                message: "Post succesfully added",
-                                results : results
+                            post.save().then(function() {
+                                response.json({
+                                    message: "Post succesfully added",
+                                    results : results
+                                });
                             });
                         });
-                    });
-                }
-                else
-                {
-                    response.json({
-                            message: "Post failed to be added",
-                            error: "No pet at index " + request.body.petId
-                        });
-                }
-            })
+                    }
+                    else
+                    {
+                        response.json({
+                                message: "Post failed to be added",
+                                error: "No pet at index " + request.body.petId
+                            });
+                    }
+                });
+            });
             
         }
         else
@@ -67,31 +70,30 @@ var showPost = new Route("/post", "get", function(request, response){
         var petIdRegex = /\d+/;
         if(request.body.userId.match(userIdRegex) && request.body.petId.match(petIdRegex))
         {
-            Pet.findById(request.body.petId).then(function(pet){
-                if(pet)
-                {
-                    post.setPet(pet);
-
-                    post.save().then(function() {
+            authenticate(request, response, function() {
+                Pet.findById(request.body.petId).then(function(pet){
+                    if(pet)
+                    {
                         response.json({
-                            message: "Post succesfully added"
-                        });
-                    });
-                }
-                else
-                {
-                    response.json({
-                            message: "Post failed to be added",
-                            error: "No pet at index " + request.body.petId
-                        });
-                }
-            })
+                                message: "Post retrieved",
+                                error: pet.getPosts()
+                            });
+                    }
+                    else
+                    {
+                        response.json({
+                                message: "Post failed to be retrieved",
+                                error: "No pet at index " + request.body.petId
+                            });
+                    }
+                });
+            });
             
         }
         else
         {
             response.json({
-                message: "Post failed to be added",
+                message: "Post failed to be retrieved",
                 error : "A field doesn't match with regex specifications"
             });
         }
@@ -100,7 +102,7 @@ var showPost = new Route("/post", "get", function(request, response){
     else
     {
         response.json({
-            message: "Post failed to be added",
+            message: "Post failed to be retrieved",
             error: "A field is empty"
         });
     }
