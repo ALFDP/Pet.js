@@ -9,8 +9,8 @@ var userSignUp = new Route("/user", "put", function(request, response){
     
     if(request.body.login !== undefined && request.body.pass !== undefined)
     {
-        var loginRegex = /\w{5,20}/;
-        var passRegex = /\w{5,20}/;
+        var loginRegex = /\w{2,20}/;
+        var passRegex = /\w{2,20}/;
         if(request.body.login.match(loginRegex) && request.body.pass.match(passRegex))
         {
             User.findAndCountAll({
@@ -59,8 +59,8 @@ var userSignUp = new Route("/user", "put", function(request, response){
 var userSignIn = new Route("/user", "post", function(request, response){
     if(request.body.login !== undefined && request.body.pass !== undefined)
     {
-        var loginRegex = /\w{5,20}/;
-        var passRegex = /\w{5,20}/;
+        var loginRegex = /\w{2,20}/;
+        var passRegex = /\w{2,20}/;
         if(request.body.login.match(loginRegex) && request.body.pass.match(passRegex))
         {
             User.findOne({

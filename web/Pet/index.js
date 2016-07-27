@@ -20,7 +20,7 @@ var addPet = new Route("/pet", "put", function(request, response){
                 var pet = Pet.build({
                     name: request.body.name,
                     type: request.body.type,
-                    born : new Date(request.body.born),
+                    born : new Date(request.body.born)
                 });
                 
                 User.findById(request.body.userId).then(function(result) {
@@ -289,12 +289,11 @@ var showPetFriend = new Route("/petFriend", "get", function(request, response){
                 Pet.findById(request.body.id).then(function(result) {
                     if(result)
                     {
-                            result.getPets().then(function(suc) {
+                            result.getPets().then(function(r) {
                                     response.json({
-                                            code: 0,
-                                            message : "Pet succesfully deleted at index " + request.body.id,
-                                            result: true
-                                    });
+                                    message: "Pet succesfully retrieved",
+                                    result: r
+                                });
                             }).catch(function(err) {
                                     response.json({
                                             code: 2,
@@ -349,7 +348,6 @@ var showPet = new Route("/pet", "get", function(request, response){
             authenticate(request, response, function() {
                 User.findById(request.body.userId).then(function(result) {
                     result.getPets().then(function(r) {
-                        console.log(r);
                         response.json({
                             message: "Pet succesfully retrieved",
                             result: r
